@@ -8,6 +8,7 @@ let etching = false;
 let drawing = false;
 let erasing = false;
 let puzzling = false;
+let darkening = false;
 
 const rainbowMode = document.getElementById("rainbow");
 rainbowMode.addEventListener("change", () => {
@@ -72,6 +73,9 @@ function init() {
 				d.setAttribute("clicked", "true");
 				if (rainbow) {
 					d.style.backgroundColor = getRainbow();
+				} else if (darkening) {
+					let rgb = d.style.backgroundColor;
+					console.log(rgb);
 				} else {
 					d.style.backgroundColor = foreColor.value;
 				}
@@ -228,4 +232,64 @@ function modeChange(opt) {
 		fgColor.setAttribute("disabled", "true");
 		bgColor.setAttribute("disabled", "true");
 	}
+}
+
+function rgbExtract(rgbString) {
+	rgbString = rgbString.substr(4);
+	let rgbArray = rgbString.split("");
+	rgbString = "";
+	rgbArray.pop();
+	let rgbPop = "";
+	let r, g, b;
+	for (let x = 0; x < 3; x++) {
+		while (rgbPop != "," && rgbArray.length > 0) {
+			rgbPop = rgbArray.shift();
+			rgbString += rgbPop;
+		}
+
+		if (x < 1) {
+			r = Number.parseInt(rgbString);
+		} else if (x < 2) {
+			g = Number.parseInt(rgbString);
+		} else {
+			b = Number.parseInt(rgbString);
+		}
+
+		rgbPop = "";
+		rgbString = "";
+	}
+
+	return [r, g, b];
+}
+
+function darken() {
+	let boxxies = boXXy.querySelectorAll(".boxxyBox");
+	boxxies.forEach((boxy) => {
+		let color = boxy.style.backgroundColor;
+		if (color == "" || color == null || color == undefined) {
+			return;
+		}
+		color = rgbExtract(color);
+		if (color[0] - 4 > 0) color[0] -= 4;
+		if (color[1] - 4 > 0) color[1] -= 4;
+		if (color[2] - 4 > 0) color[2] -= 4;
+		color = `rgb(${color[0]},${color[1]},${color[2]})`;
+		boxy.style.backgroundColor = color;
+	});
+}
+
+function lighten() {
+	let boxxies = boXXy.querySelectorAll(".boxxyBox");
+	boxxies.forEach((boxy) => {
+		let color = boxy.style.backgroundColor;
+		if (color == "" || color == null || color == undefined) {
+			return;
+		}
+		color = rgbExtract(color);
+		if (color[0] + 4 < 256) color[0] += 4;
+		if (color[1] + 4 < 256) color[1] += 4;
+		if (color[2] + 4 < 256) color[2] += 4;
+		color = `rgb(${color[0]},${color[1]},${color[2]})`;
+		boxy.style.backgroundColor = color;
+	});
 }
